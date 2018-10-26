@@ -1,0 +1,11 @@
+app.py
+config/
+maildoglog.txt
+reply_data/
+reply_rulesets/
+reply_templates/
+tests/
+__py*
+*.pyc
+*/*.pyc
+*/_py*

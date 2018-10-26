@@ -1,0 +1,54 @@
+* Simple email automation with python
+Being part of a growing organization means answering alot of questions about the organization from newcomers. This can be tedious especially when the information is readily available. Many people seek a human connection via internet, so they write an email.
+
+If many people do this the replying human may not have the time to be as informative or as friendly as one wishes. Alas, the newcomer has a sour taste from reading a short, uninformative, hastily written, or even somewhat brusk reply. 
+
+Everyone likes dogs. Dogs are friendly and attuned to our emotions, habits, and lives. We train them to be helpful. This software is supposed to be like a dog that retrieves the newspaper, barks only at intruders, amiably nuzzles the newcomer, and keeps quiet when it doesn't know what to do. We train it to be helpful. It has the propensity to learn and grow.
+
+* Get maildog working for you
+The idea of maildog is that you train it for your needs. The following steps detail what this entails.
+
+** Install it
+
+1. Get the software:
+#+BEGIN_SRC shell
+pip3 install git+https://github.com/oneyb/maildog
+# Or:
+git clone https://github.com/oneyb/maildog
+cd maildog && python3 setup.py install
+#+END_SRC
+
+*NOTE*: you will need to install it as root or as your user (--user), in order to have the following scripts in the system path.
+
+2. Train it to fetch mail.
+
+3. Modify the [[file:reply_templates/][templates]] for replies:
+   - Please see [[examples][examples]] for inspiration.
+
+4. Install a systemd service for your user.
+   - If you have this running on a raspberry pi, you may consider having the service run without you having to login. I mean: 
+   #+BEGIN_SRC shell
+   loginctl enable-linger $USER
+   #+END_SRC
+
+5. Check whether the dog does what you want.
+
+6. Enjoy the helpfulness of the new pet
+
+* Anatomy of maildog
+
+Given access to an email server, maildog fetches email and chews them into a useful form (Mail). 
+
+ - *Mail*: 
+   - has a tokenized (nltk) form of the email's subject and body,
+   - knows the language it was written in, and
+   - based on how you trained the dog (how rulesets are defined), has chosen a template.
+
+ - *Reply*:
+   - inherits information from Mail
+   - gets and renders the chosen template, 
+   - picks up any attachments, 
+   - sends the reply, and
+   - triggers deletion or move of the original email.
+
+
