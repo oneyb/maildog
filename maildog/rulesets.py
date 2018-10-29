@@ -20,6 +20,9 @@ def get_rulesets(file_pattern, rulesets_dir):
     """
 
     files = _find_files(file_pattern, rulesets_dir)
+    if not files:
+        raise FileNotFoundError("Rulesets files could not be located.")
+
     rulesets = []
     for f in files:
         if f.lower().endswith('csv'):
@@ -45,7 +48,9 @@ def get_rulesets(file_pattern, rulesets_dir):
 
     Ruleset = namedtuple('Ruleset', rulesets[0])
     rulesets = [Ruleset(*t) for t in rulesets[1:]]
-    # rulesets = [t for t in rulesets if t.language == language]
+    if 'template_file' not in rulesets[0]:
+        Warning('Please consider naming the column containing template '
+                'file names: "template_file"')
     return rulesets
 
 

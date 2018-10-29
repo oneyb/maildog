@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 
+# import pdb; pdb.set_trace()
+
 from nltk import wordpunct_tokenize
 from nltk.corpus import stopwords
 from os.path import basename
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.message import MIMEMessage
 from email.utils import COMMASPACE, formatdate
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from itertools import chain
 
 from maildog.rulesets import _find_files
+
 
 class Mail(object):
     body = None
@@ -26,6 +30,8 @@ class Mail(object):
     ruleset = None
     uid = None
     reply = None
+    raw_message = None
+    reply_message = None
 
     def detect_language(self):
         """
@@ -44,6 +50,10 @@ class Mail(object):
         @return: Most scored language guessed
         @rtype: str
         """
+
+        def _tokenize_email(body, subject):
+            tokens = wordpunct_tokenize(subject + " " + body)
+            return [word.lower() for word in tokens]
 
         def _calculate_languages_ratios(words):
             """Calculate probability of given text to be written in several languages
@@ -72,22 +82,15 @@ class Mail(object):
 
             return languages_ratios
 
+        self.tokens = _tokenize_email(self.body, self.subject)
         ratios = _calculate_languages_ratios(self.tokens)
-
         self.language = max(ratios, key=ratios.get)
-
         return self.language
 
-    def tokenize_email(self):
-        text = self.subject + " " + self.body
-        tokens = wordpunct_tokenize(text)
-        self.tokens = [word.lower() for word in tokens]
-
-        return self.tokens
-
     def choose_ruleset(self, rulesets):
-        """Applies logical questions to determine what the proper answer is.
-        Returns a template to be rendered with the addresses data.
+        """Applies logical questions to determine what the proper answer is.  Returns a
+        template to be rendered with the addresses data.  It excludes any
+        disqualified ruleset or any unqualified ruleset (no matches).
 
         Also prepares any possible attachments for a ruleset
         @param rulesets: rules for choosing and excluding a template for answer
@@ -104,16 +107,13 @@ class Mail(object):
         for i, x in enumerate(rulesets):
             for token in self.tokens:
                 if token in x.disqualifiers:
-                    ruleset_scores[i] -= None
                     continue
                 if token in x.qualifiers:
                     ruleset_scores[i] += 1
 
-        ruleset_scores = [(r, s)
-                          for r, s in zip(rulesets, ruleset_scores) if s]
-        if ruleset_scores:
-            (self.ruleset, _) = ruleset_scores[
-                ruleset_scores.index(max(s for r, s in ruleset_scores))]
+        top_score = max(ruleset_scores)
+        if top_score > 0:
+            self.ruleset = rulesets[ruleset_scores.index(top_score)]
             if self.ruleset.attachments:
                 self.attachments = self.ruleset.attachments.split(' ')
                 return self.ruleset
@@ -125,7 +125,7 @@ class Mail(object):
         assert isinstance(self.reply_to, list)
 
         rply = MIMEMultipart()
-        rply['From'] = self.to[0]
+        rply['From'] = self.to
         rply['To'] = COMMASPACE.join(self.reply_to)
         rply['Date'] = formatdate(localtime=True)
         # rply['Date'] = datetime.datetime.today().isoformat()
@@ -133,8 +133,11 @@ class Mail(object):
         rply["In-Reply-To"] = self.message_id
         rply["References"] = self.message_id
 
-        rply.attach(MIMEText(self.reply))
+        rply.attach(MIMEText(self.reply_message))
 
+        # import pdb; pdb.set_trace()
+        # orig_msg = MIMEMessage(self.raw_message)
+        rply.attach(MIMEMessage(self.raw_message))
 
         files = chain(*[_find_files(f, reply_data_dir)
                         for f in self.attachments])
@@ -144,7 +147,8 @@ class Mail(object):
             with open(f, "rb") as fcon:
                 p = MIMEApplication(fcon.read(), Name=basename(f))
             # After the file is closed
-            p['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+            p['Content-Disposition'] = 'attachment; filename="%s"' \
+                                                              % basename(f)
             rply.attach(p)
 
         return rply
@@ -175,9 +179,10 @@ class Mail(object):
             autoescape=select_autoescape(enabled_extensions=['txt', 'html']),
             auto_reload=True)
 
+        # template = env.get_template(self.template_file)
         template = env.get_template(self.ruleset[0])
-        self.reply = template.render(**self.get_reply_info())
-        return self.reply
+        self.reply_message = template.render(**self.get_reply_info())
+        return self.reply_message
 
     def get_reply_info(self):
         return dict(

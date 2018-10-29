@@ -1,5 +1,4 @@
 IMAPClient==2.1.0
-pyzmail36==1.0.3
 nltk==3.3
 Jinja2==2.10
 openpyxl==2.5.4
