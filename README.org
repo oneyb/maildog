@@ -1,4 +1,4 @@
-* Simple email automation with python
+* Simple email reply automation with python
 Being part of a growing organization means answering alot of questions about the organization from newcomers. This can be tedious especially when the information is readily available. Many people seek a human connection via internet, so they write an email.
 
 If many people do this the replying human may not have the time to be as informative or as friendly as one wishes. Alas, the newcomer has a sour taste from reading a short, uninformative, hastily written, or even somewhat brusk reply. 
@@ -44,11 +44,5 @@ Given access to an email server, maildog fetches email and chews them into a use
    - knows the language it was written in, and
    - based on how you trained the dog (how rulesets are defined), has chosen a template.
 
- - *Reply*:
-   - inherits information from Mail
-   - gets and renders the chosen template, 
-   - picks up any attachments, 
-   - sends the reply, and
-   - triggers deletion or move of the original email.
 
 
