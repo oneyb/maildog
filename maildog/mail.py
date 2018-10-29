@@ -88,3 +88,28 @@ def delete_answered_emails(UIDs, cfg):
         # server.logout()  # unnecessary
 
 
+def copy_sent_messages_and_delete_answered_emails(mails, cfg):
+    """
+    1. Log in to the email server.
+    2. Mark ANSWERED emails as deleted.
+    3. Expunge (have server actually delete them).
+    """
+
+    with imapclient.IMAPClient(cfg.IMAP_SERVER, ssl=True) as server:
+        server.login(cfg.MAILDOG_EMAIL, cfg.MAILDOG_EMAIL_PASSWORD)
+        server.select_folder('INBOX')
+        UIDs = server.search("ANSWERED")
+        logging.debug('Connected. %s' % server.welcome)
+
+        for msg in mails:
+            result = server.append('Sent', r'(READ)', msg.reply_message.as_string())
+            # server.move(UIDs, imapclient.imapclient.SENT)
+            # server.move(UIDs,
+            #             server.find_special_folder(imapclient.imapclient.SENT))
+        # # Delete the emails, if there are any.
+        # if UIDs:
+        #     server.delete_messages(UIDs)
+        #     server.expunge()
+
+
+

@@ -53,7 +53,8 @@ class Mail(object):
 
         def _tokenize_email(body, subject):
             tokens = wordpunct_tokenize(subject + " " + body)
-            return [word.lower() for word in tokens]
+            tokens = [word.lower() for word in tokens]
+            return tokens
 
         def _calculate_languages_ratios(words):
             """Calculate probability of given text to be written in several languages
@@ -83,6 +84,7 @@ class Mail(object):
             return languages_ratios
 
         self.tokens = _tokenize_email(self.body, self.subject)
+        print(self.tokens)
         ratios = _calculate_languages_ratios(self.tokens)
         self.language = max(ratios, key=ratios.get)
         return self.language
