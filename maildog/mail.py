@@ -65,7 +65,7 @@ def get_new_emails(cfg):
 def delete_answered_emails(UIDs, cfg):
     """
     1. Log in to the email server.
-    2. Mark ANSWERED emails as deleted.
+    2. *Flag* ANSWERED emails as \\deleted.
     3. Expunge (have server actually delete them).
     """
 
@@ -89,8 +89,9 @@ def delete_answered_emails(UIDs, cfg):
 def copy_to_sent_and_delete(mails, cfg):
     """
     1. Log in to the email server.
-    2. Mark ANSWERED emails as deleted.
-    3. Expunge (have server actually delete them).
+    2. APPEND sent message to Sent folder
+    3. If successful, *flag* original message as \\Deleted
+    4. Expunge (have server actually delete them).
     """
 
     with imapclient.IMAPClient(cfg.IMAP_SERVER, ssl=True) as server:

@@ -32,6 +32,7 @@ class Mail(object):
     reply = None
     raw_message = None
     reply_message = None
+    send_result = None
 
     def detect_language(self):
         """
