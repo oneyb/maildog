@@ -1,33 +1,67 @@
 * Simple email reply automation with python
-Being part of a growing organization means answering alot of questions about the organization from newcomers. This can be tedious especially when the information is readily available. Many people seek a human connection via internet, so they write an email.
+This puppy aims to make life easier for those that write too many of the same
+kind of email.
 
-If many people do this the replying human may not have the time to be as informative or as friendly as one wishes. Alas, the newcomer has a sour taste from reading a short, uninformative, hastily written, or even somewhat brusk reply. 
+Being part of a growing organization means answering alot of questions about
+the organization from newcomers. This can be tedious especially when the
+information is readily available. Many people seek a human connection via
+internet, so they write an email.
 
-Everyone likes dogs. Dogs are friendly and attuned to our emotions, habits, and lives. We train them to be helpful. This software is supposed to be like a dog that retrieves the newspaper, barks only at intruders, amiably nuzzles the newcomer, and keeps quiet when it doesn't know what to do. We train it to be helpful. It has the propensity to learn and grow.
+If many people do this the replying human may not have the time to be as
+informative or as friendly as one wishes. Alas, the newcomer has a sour taste
+from reading a short, uninformative, hastily written, or even somewhat brusk
+reply.
+
+Everyone likes dogs. Dogs are friendly and attuned to our emotions, habits,
+and lives. We train them to be helpful. This software is supposed to be like a
+dog that retrieves the newspaper, barks only at intruders, amiably nuzzles the
+newcomer, and keeps quiet when it doesn't know what to do. We train it to be
+helpful. It has the propensity to learn and grow.
 
 * Get maildog working for you
-The idea of maildog is that you train it for your needs. The following steps detail what this entails.
+The idea of maildog is that you train it for your needs. The following steps
+detail what this entails.
 
-** Install it
+** Install and configure it
 
 1. Get the software:
-#+BEGIN_SRC shell
-pip3 install git+https://github.com/oneyb/maildog
-# Or:
-git clone https://github.com/oneyb/maildog
-cd maildog && python3 setup.py install
-#+END_SRC
+   #+BEGIN_SRC shell
+   pip3 install git+https://github.com/oneyb/maildog
+   # Or:
+   git clone https://github.com/oneyb/maildog
+   cd maildog && python3 setup.py install
+   #+END_SRC
 
-*NOTE*: you will need to install it as root or as your user (--user), in order to have the following scripts in the system path.
+   *NOTE*: you will need to install it as root or as your user (pip install --user), in
+   order to have the following scripts in the system path.
 
-2. Train it to fetch mail.
+2. Copy the ~tests~ directory to where you want it
 
-3. Modify the [[file:reply_templates/][templates]] for replies:
-   - Please see [[examples][examples]] for inspiration.
+   #+BEGIN_SRC shell 
+   cp -r /usr/local/lib/python3.5/dist-packages/maildog/maildog/tests/ my_maildog/
+   #+END_SRC
+
+3. Inspect and the following files according to your taste:
+   - [ ] [[maildog/tests/reply_data/example.pdf]]
+   - [ ] [[maildog/tests/reply_data/beispiel.pdf]]
+   - [ ] [[maildog/tests/reply_templates/english.txt.j2]]
+   - [ ] [[maildog/tests/reply_templates/german.txt.j2]]
+   - [ ] [[maildog/tests/reply_rulesets/rulesets.csv]]
+   - [ ] [[maildog/tests/config/maildog.timer]]
+   - [ ] [[maildog/tests/config/maildog.service]]
+   - [ ] [[maildog/tests/config/config.py]]
+   - [ ] [[maildog/tests/test_render_template.py]]
+   - [ ] [[maildog/tests/test_detect_language.py]]
+   - [ ] [[maildog/tests/test_email_config.py]]
+   - [ ] [[maildog/tests/test_ruleset.py]]
+   - [ ] [[maildog/tests/example_app.py]]
 
 4. Install a systemd service for your user.
-   - If you have this running on a raspberry pi, you may consider having the service run without you having to login. I mean: 
+   - If you have this running on a raspberry pi, you may consider having the
+     service run without you having to login. I mean:
    #+BEGIN_SRC shell
+   cp maildog/tests/config/maildog.timer maildog/tests/config/maildog.service $HOME/.config/systemd/user/
+   systemctl --user enable maildog.timer
    loginctl enable-linger $USER
    #+END_SRC
 
@@ -44,5 +78,13 @@ Given access to an email server, maildog fetches email and chews them into a use
    - knows the language it was written in, and
    - based on how you trained the dog (how rulesets are defined), has chosen a template.
 
+ See the  [[maildog/__init__.py.][definition]]  for more information
 
+
+ 
+* Contributions are welcome
+
+I have maildog working for me to reply to certain emails which generally come
+in two languages. You likely have an interesting case as well. Please
+contribute if you can. See the open issues for inspiration.
 
