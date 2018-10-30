@@ -155,7 +155,7 @@ class Mail(object):
 
         return rply
 
-    def notify_owner(self, rulesets, owner):
+    def compose_notify_owner(self, rulesets, owner):
 
         rply = MIMEText(self.body + '\n\n'
                         + '\n'.join(str(r._asdict()) for r in rulesets))

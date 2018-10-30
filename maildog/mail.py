@@ -38,18 +38,15 @@ def get_new_emails(cfg):
             ep = email.parser.BytesFeedParser()
             ep.feed(messages[UID][b'RFC822'])
             message = ep.close()
-            # import pdb; pdb.set_trace()
-            # message = pyzmail.PyzMessage.factory(messages[UID][b'BODY[]'])
-            if message.get_content_type() == 'text/html':
+            if message.get_default_type() == 'text/html':
                 mail.html = True
             else:
                 mail.html = False
 
-            # pdb.set_trace()
             # save desirables
             mail.to = message['To']
             mail.fro = message['From']
-            mail.body = message.get_payload()
+            mail.body = message.get_payload(0).get_payload()
             mail.subject = message['Subject']
             mail.reply_to = [message.get('Reply-To', mail.fro)]
             if not mail.reply_to:
@@ -58,6 +55,7 @@ def get_new_emails(cfg):
             mail.message_id = message.get("Message-ID")
             mail.raw_message = message
             mail.uid = UID
+            # import pdb; pdb.set_trace()
 
             mails.append(mail)
 
@@ -88,7 +86,7 @@ def delete_answered_emails(UIDs, cfg):
         # server.logout()  # unnecessary
 
 
-def copy_sent_messages_and_delete_answered_emails(mails, cfg):
+def copy_to_sent_and_delete(mails, cfg):
     """
     1. Log in to the email server.
     2. Mark ANSWERED emails as deleted.
@@ -98,18 +96,21 @@ def copy_sent_messages_and_delete_answered_emails(mails, cfg):
     with imapclient.IMAPClient(cfg.IMAP_SERVER, ssl=True) as server:
         server.login(cfg.MAILDOG_EMAIL, cfg.MAILDOG_EMAIL_PASSWORD)
         server.select_folder('INBOX')
-        UIDs = server.search("ANSWERED")
+        # UIDs = server.search("ANSWERED")
         logging.debug('Connected. %s' % server.welcome)
 
+        results = {}
         for msg in mails:
-            result = server.append('Sent', r'(READ)', msg.reply_message.as_string())
+            res_append = server.append('Sent', msg.reply_message.as_string(),
+                                       [r'\Seen'])
+            if b'APPEND completed' in res_append:
+                res_mark = server.add_flags(msg.uid, [r'\Seen', r'\Deleted'])
             # server.move(UIDs, imapclient.imapclient.SENT)
             # server.move(UIDs,
             #             server.find_special_folder(imapclient.imapclient.SENT))
-        # # Delete the emails, if there are any.
-        # if UIDs:
-        #     server.delete_messages(UIDs)
-        #     server.expunge()
-
-
-
+            results[msg.uid] = res_append
+        # Delete the emails, if there are any.
+        # import pdb; pdb.set_trace()
+        # server.delete_messages(UIDs)
+        server.expunge()
+    return results
