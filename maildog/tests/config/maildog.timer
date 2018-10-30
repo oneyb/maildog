@@ -1,0 +1,9 @@
+[Unit]
+Description=A timer for Maildog: the extensible, email reply hound
+
+[Timer]
+# OnBootSec=26s
+Unit=maildog.service
+
+[Install]
+WantedBy=default.target

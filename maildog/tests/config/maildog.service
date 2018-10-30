@@ -1,0 +1,15 @@
+[Unit]
+Description=Maildog: the extensible, email reply hound
+
+[Service]
+# Type=forking
+# EnvironmentFile=-%h/.profile
+ExecStart={{ path }}/maildog
+# ExecStop=
+# Restart=always
+# Remove the limit in startup timeout, since maildog
+# cloning and building all packages can take time
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target

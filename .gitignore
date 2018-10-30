@@ -1,10 +1,9 @@
-app.py
-config/
+# config/
+# reply_data/
+# reply_rulesets/
+# reply_templates/
+# tests/
 maildoglog.txt
-reply_data/
-reply_rulesets/
-reply_templates/
-tests/
 __py*
 *.pyc
 */*.pyc
