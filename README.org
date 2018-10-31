@@ -24,7 +24,7 @@ detail what this entails.
 
 ** Install and configure it
 
-1. Get the software:
+1. Get the software.
    #+BEGIN_SRC shell
    pip3 install git+https://github.com/oneyb/maildog
    # Or:
@@ -35,13 +35,15 @@ detail what this entails.
    *NOTE*: you will need to install it as root or as your user (pip install --user), in
    order to have the following scripts in the system path.
 
-2. Copy the ~tests~ directory to where you want it
+2. Copy the ~tests~ directory to where you want it.
 
    #+BEGIN_SRC shell 
    cp -r /usr/local/lib/python3.5/dist-packages/maildog/maildog/tests/ my_maildog/
+   # or
+   cp -r maildog/maildog/tests/ my_maildog/
    #+END_SRC
 
-3. Inspect and modify the following files according to your taste:
+3. Inspect and modify the following files according to your taste.
    - [[maildog/tests/example_app.py]]
      - This shows a simple example of what you could set up.
    - [[maildog/tests/reply_data/example.pdf]]
@@ -93,7 +95,7 @@ Given access to an email server, maildog fetches email and chews them into a use
    - knows the language it was written in, and
    - based on how you trained the dog (how rulesets are defined), has chosen a template.
 
- See the  [[maildog/__init__.py.][definition]]  for more information
+ See the [[file:maildog/__init__.py][definition]] for more information
 
 
  
