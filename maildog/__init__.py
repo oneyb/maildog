@@ -109,6 +109,7 @@ class Mail(object):
         rulesets = [r for r in rulesets if r.language == self.language]
         ruleset_scores = [0 for i in range(len(rulesets))]
         for i, x in enumerate(rulesets):
+            qualifiers = x.qualifiers.split(' ')
             for token in self.tokens:
                 if token in x.disqualifiers:
                     continue
@@ -116,7 +117,7 @@ class Mail(object):
                     if token in x.qualifiers:
                         ruleset_scores[i] += 1
                         rulesets[i].score += 1
-                elif token in x.qualifiers.split(' '):
+                elif token in qualifiers:
                     ruleset_scores[i] += 1
                     rulesets[i].score += 1
 
