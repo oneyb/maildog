@@ -31,9 +31,9 @@ for msg in mails:
     if msg.ruleset:
         msg.render_template(cfg.REPLY_TEMPLATE_DIR)
         msg.reply_message = msg.compose_reply(cfg.REPLY_DATA_DIR)
-
+        msg.reply = True
     else:
-        logging.debug('Email needs attention: [%s] %s',
+        logging.debug('Email needs attention: [%s] %s' %
                       (msg.uid, msg.subject))
         msg.reply_to = [cfg.MAILDOG_OWNER_EMAIL]
         msg.reply_message = msg.compose_notify_owner(rulesets_list,
@@ -54,6 +54,6 @@ with smtplib.SMTP(cfg.SMTP_SERVER, cfg.SMTP_PORT) as send_server:
         print(msg.send_result)
 
 
-# copy and delete if successfully sent
-mail.copy_to_sent_and_delete([msg for msg in mails if not msg.send_result],
+# copy and delete if successfully replied to and sent
+mail.copy_to_sent_and_delete([msg for msg in mails if msg.reply],
                              cfg)

@@ -38,6 +38,9 @@ def get_new_emails(cfg):
             ep = email.parser.BytesFeedParser()
             ep.feed(messages[UID][b'RFC822'])
             message = ep.close()
+            encoding = message.get_charset()
+            if not encoding:
+                encoding = message.get_charsets()[0]
             if message.get_default_type() == 'text/html':
                 mail.html = True
             else:
@@ -46,7 +49,14 @@ def get_new_emails(cfg):
             # save desirables
             mail.to = message['To']
             mail.fro = message['From']
-            mail.body = message.get_payload(0).get_payload()
+            body = message.get_payload(decode=True)
+            if isinstance(body, list):
+                mail.body = body[0].decode()
+            elif not body:
+                mail.body = message.get_payload(0).get_payload()
+            else:
+                mail.body = body.decode()
+
             mail.subject = message['Subject']
             mail.reply_to = [message.get('Reply-To', mail.fro)]
             if not mail.reply_to:

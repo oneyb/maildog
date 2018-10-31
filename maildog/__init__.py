@@ -78,16 +78,17 @@ class Mail(object):
             for language in stopwords.fileids():
                 stopwords_set = set(stopwords.words(language))
                 words_set = set(words)
-                common_elements = words_set.intersection(stopwords_set)
+                # common_elements = words_set.intersection(stopwords_set)
+                common_elements = words_set.difference(stopwords_set)
                 # language "score"
                 languages_ratios[language] = len(common_elements)
 
             return languages_ratios
 
         self.tokens = _tokenize_email(self.body, self.subject)
-        print(self.tokens)
+        # print(self.tokens)
         ratios = _calculate_languages_ratios(self.tokens)
-        self.language = max(ratios, key=ratios.get)
+        self.language = min(ratios, key=ratios.get)
         return self.language
 
     def choose_ruleset(self, rulesets):
@@ -111,15 +112,21 @@ class Mail(object):
             for token in self.tokens:
                 if token in x.disqualifiers:
                     continue
-                if token in x.qualifiers:
+                if len(token) > 3:
+                    if token in x.qualifiers:
+                        ruleset_scores[i] += 1
+                        rulesets[i].score += 1
+                elif token in x.qualifiers.split(' '):
                     ruleset_scores[i] += 1
+                    rulesets[i].score += 1
 
-        top_score = max(ruleset_scores)
-        if top_score > 0:
-            self.ruleset = rulesets[ruleset_scores.index(top_score)]
-            if self.ruleset.attachments:
-                self.attachments = self.ruleset.attachments.split(' ')
-                return self.ruleset
+        if ruleset_scores:
+            top_score = max(ruleset_scores)
+            if top_score > 0:
+                self.ruleset = rulesets[ruleset_scores.index(top_score)]
+                if self.ruleset.attachments:
+                    self.attachments = self.ruleset.attachments.split(' ')
+                    return self.ruleset
 
     def compose_reply(self, reply_data_dir, reply_prefix='RE: '):
         """
@@ -159,6 +166,8 @@ class Mail(object):
     def compose_notify_owner(self, rulesets, owner):
 
         rply = MIMEText(self.body + '\n\n'
+                        + 'Language: %s\n' % self.language
+                        + 'Tokens: %s\n' % ';'.join(self.tokens)
                         + '\n'.join(str(r._asdict()) for r in rulesets))
         rply['From'] = self.to
         rply['To'] = owner
