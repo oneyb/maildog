@@ -41,32 +41,32 @@ detail what this entails.
    cp -r /usr/local/lib/python3.5/dist-packages/maildog/maildog/tests/ my_maildog/
    #+END_SRC
 
-3. Inspect and the following files according to your taste:
-   - [ ] [[maildog/tests/example_app.py]]
-     - This shows a simple example of what I have set up.
-   - [ ] [[maildog/tests/reply_data/example.pdf]]
+3. Inspect and modify the following files according to your taste:
+   - [[maildog/tests/example_app.py]]
+     - This shows a simple example of what you could set up.
+   - [[maildog/tests/reply_data/example.pdf]]
      - You can add any kind of attachment.
-   - [ ] [[maildog/tests/reply_data/beispiel.pdf]]
+   - [[maildog/tests/reply_data/beispiel.pdf]]
      - Ditto.
-   - [ ] [[maildog/tests/reply_templates/english.txt.j2]]
+   - [[maildog/tests/reply_templates/english.txt.j2]]
      - What about a friendly template?
-   - [ ] [[maildog/tests/reply_templates/german.txt.j2]]
+   - [[maildog/tests/reply_templates/german.txt.j2]]
      - Sprechen Sie Deutsch?
-   - [ ] [[maildog/tests/reply_rulesets/rulesets.csv]]
+   - [[maildog/tests/reply_rulesets/rulesets.csv]]
      - Configure what is sent (which attachment, template, etc.) if at all.
-   - [ ] [[maildog/tests/config/maildog.timer]]
+   - [[maildog/tests/config/maildog.timer]]
      - Why not cron?
-   - [ ] [[maildog/tests/config/maildog.service]]
+   - [[maildog/tests/config/maildog.service]]
      - Sheesh! Two files for a periodically run application?!
-   - [ ] [[maildog/tests/config/config.py]]
+   - [[maildog/tests/config/config.py]]
      - What you are storing passwords as plain text? You'd better have that file unreadable and that server well secured.
-   - [ ] [[maildog/tests/test_render_template.py]]
+   - [[maildog/tests/test_render_template.py]]
      - Ah, tests. Good.
-   - [ ] [[maildog/tests/test_detect_language.py]]
+   - [[maildog/tests/test_detect_language.py]]
      - Non parle italiano!? Che cazzo!
-   - [ ] [[maildog/tests/test_email_config.py]]
+   - [[maildog/tests/test_email_config.py]]
      - That's a cute test...
-   - [ ] [[maildog/tests/test_ruleset.py]]
+   - [[maildog/tests/test_ruleset.py]]
      - Those named tuples are pretty snazzy, eh?
 
 4. Install a systemd service for your user.
