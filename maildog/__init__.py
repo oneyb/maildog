@@ -116,10 +116,8 @@ class Mail(object):
                 if len(token) > 3:
                     if token in x.qualifiers:
                         ruleset_scores[i] += 1
-                        rulesets[i].score += 1
                 elif token in qualifiers:
                     ruleset_scores[i] += 1
-                    rulesets[i].score += 1
 
         if ruleset_scores:
             top_score = max(ruleset_scores)
@@ -128,6 +126,8 @@ class Mail(object):
                 if self.ruleset.attachments:
                     self.attachments = self.ruleset.attachments.split(' ')
                     return self.ruleset
+                if self.ruleset.html:
+                    self.html = True
 
     def compose_reply(self, reply_data_dir, reply_prefix='RE: '):
         """
@@ -143,24 +143,27 @@ class Mail(object):
         rply['Subject'] = reply_prefix + self.subject
         rply["In-Reply-To"] = self.message_id
         rply["References"] = self.message_id
-
-        rply.attach(MIMEText(self.reply_message))
+        if self.html:
+            rply.attach(MIMEText(self.reply_message, 'html', 'utf-8'))
+        else:
+            rply.attach(MIMEText(self.reply_message, 'plain', 'utf-8'))
 
         # import pdb; pdb.set_trace()
         # orig_msg = MIMEMessage(self.raw_message)
         rply.attach(MIMEMessage(self.raw_message))
 
-        files = chain(*[_find_files(f, reply_data_dir)
-                        for f in self.attachments])
+        if self.attachments:
+            files = chain(*[_find_files(f, reply_data_dir)
+                            for f in self.attachments])
 
-        for f in files:
-            print('Attaching: ' + f)
-            with open(f, "rb") as fcon:
-                p = MIMEApplication(fcon.read(), Name=basename(f))
-            # After the file is closed
-            p['Content-Disposition'] = 'attachment; filename="%s"' \
+            for f in files:
+                print('Attaching: ' + f)
+                with open(f, "rb") as fcon:
+                    p = MIMEApplication(fcon.read(), Name=basename(f))
+                    # After the file is closed
+                    p['Content-Disposition'] = 'attachment; filename="%s"' \
                                                               % basename(f)
-            rply.attach(p)
+                    rply.attach(p)
 
         return rply
 
