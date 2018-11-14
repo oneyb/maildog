@@ -14,7 +14,6 @@ class TestRuleset(unittest.TestCase):
     Make sure the rulesets work as expected
     """
 
-
     def test_get_rulesets_configured(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 DESCRIPTION = "Custom and easy automatic email replies"
-LONG_DESCRIPTION = """maildog is here to help you with tedious emails.
 
-This puppy reads your emails and replies to those which have a fitting ruleset,
-using the associated ruleset.
+LONG_DESCRIPTION = """
+maildog is here to help you with tedious emails.  This puppy reads your
+emails and replies to those which have a fitting ruleset, using the associated
+ruleset.
 """
 
 DISTNAME = 'maildog'
@@ -24,34 +25,42 @@ except ImportError:
     from distutils.core import setup
 
 
-def check_dependencies():
-    install_requires = []
-    with open('requirements.txt', 'r') as f:
-        for l in f.readlines():
-            install_requires.append(l.split("==")[0])
-    try:
-        from nltk.corpus import stopwords
-        stopwords.words('english')
-    except LookupError:
-        import nltk
-        nltk.download("stopwords")
-
-    return install_requires
+# def check_dependencies():
+#     install_requires = []
+#     with open('requirements.txt', 'r') as f:
+#         for l in f.readlines():
+#             install_requires.append(l.split("==")[0])
+#     # try:
+#     #     from nltk.corpus import stopwords
+#     #     stopwords.words('english')
+#     # except LookupError:
+#     #     print(install_requires)
+#     return install_requires
 
 
 class Install(_install):
-    """Allow installation of nltk.corpus files, which are external to the nltk
-    package
+    """Allow installation of external files and post-scrips, which are external
     """
     def run(self):
-        _install.do_egg_install(self)
-        import nltk
-        nltk.download("stopwords")
+        _install.run(self)
+        import spacy
+        # spacy.cli.download("en")
+        # spacy.cli.download("it")
+        # spacy.cli.download("de")
+        # spacy.cli.download("fr")
+        spacy.cli.download("en_core_web_sm")
+        spacy.cli.download("it_core_news_sm")
+        spacy.cli.download("de_core_news_sm")
+        spacy.cli.download("fr_core_news_sm")
+        spacy.cli.link("en_core_web_sm", "en", force=True)
+        spacy.cli.link("it_core_news_sm", "it", force=True)
+        spacy.cli.link("de_core_news_sm", "de", force=True)
+        spacy.cli.link("fr_core_news_sm", "fr", force=True)
 
 
 if __name__ == "__main__":
 
-    install_requires = check_dependencies()
+    # install_requires = check_dependencies()
     # install_requires = []
 
     setup(name=DISTNAME,
@@ -66,8 +75,8 @@ if __name__ == "__main__":
           url=URL,
           version=VERSION,
           download_url=DOWNLOAD_URL,
-          install_requires=install_requires,
-          setup_requires=install_requires,
+          # install_requires=install_requires,
+          # setup_requires=install_requires,
           # entry_points={
           #     'console_scripts': [
           #         # 'maildog=maildog.maildog:main',
@@ -79,6 +88,7 @@ if __name__ == "__main__":
               'Programming Language :: Python :: 2.7',
               'Programming Language :: Python :: 3.3',
               'Programming Language :: Python :: 3.4',
+              'Programming Language :: Python :: 3.5',
               'License :: OSI Approved :: GPLv2 License',
               'Operating System :: POSIX',
               'Operating System :: Unix',

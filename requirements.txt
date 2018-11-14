@@ -3,7 +3,7 @@ Jinja2==2.10
 openpyxl==2.5.4
 spacy>=2.0.0,<3.0.0
 pycld2==0.31
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.0.0/en_core_web_sm-2.0.0.tar.gz#en
-https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-2.0.0/de_core_news_sm-2.0.0.tar.gz#de
-https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.0.0/fr_core_news_sm-2.0.0.tar.gz#fr
-https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-2.0.0/it_core_news_sm-2.0.0.tar.gz#it
+# https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.0.0/en_core_web_sm-2.0.0.tar.gz#en_core_web_sm
+# https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-2.0.0/de_core_news_sm-2.0.0.tar.gz#de_core_news_sm
+# https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.0.0/fr_core_news_sm-2.0.0.tar.gz#fr_core_news_sm
+# https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-2.0.0/it_core_news_sm-2.0.0.tar.gz#it_core_news_sm

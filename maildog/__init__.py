@@ -36,23 +36,27 @@ class Mail(object):
     reply_message = None
     send_result = None
     _doc = None
-    _nlp = None
+    info = None
 
     def extract_info_from_tags(self):
-        """Tag email contents with part-of-speech classifications. 
-        @return: Dictionary with keywords and their values as deduced from the
+        """Tag email contents with part-of-speech classifications.
+
+        @return: dictionary with keywords and their values as deduced from the
         email's body
 
         @rtype: dict
+
         """
 
         def _get_first_name(doc):
             candidates = [w.text for w in doc if w.pos_ == 'PROPN']
-            return candidates
+            res = candidates.pop() if candidates else ""
+            return res
 
-        info = {}
-        info["first_name"] = _get_first_name(self._doc)
-        # info["last_name"] = self._get_last_name(self._doc)
+        self.info = {}
+        self.info["first_name"] = _get_first_name(self._doc)
+        # self.info["last_name"] = self._get_last_name(self._doc)
+        return self.info
 
     def analyze_text(self):
         nlp = spacy.load(self.language)
@@ -66,7 +70,7 @@ class Mail(object):
         Uses the refactored version of Google's compact language detector.
 
         Works for up to 80 languages.
-        @return: highest scored language
+        @return: highest scored language code
         @rtype: str
 
         """
