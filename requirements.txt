@@ -1,4 +1,9 @@
 IMAPClient==2.1.0
-nltk==3.3
 Jinja2==2.10
 openpyxl==2.5.4
+spacy>=2.0.0,<3.0.0
+pycld2==0.31
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.0.0/en_core_web_sm-2.0.0.tar.gz#en
+https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-2.0.0/de_core_news_sm-2.0.0.tar.gz#de
+https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.0.0/fr_core_news_sm-2.0.0.tar.gz#fr
+https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-2.0.0/it_core_news_sm-2.0.0.tar.gz#it

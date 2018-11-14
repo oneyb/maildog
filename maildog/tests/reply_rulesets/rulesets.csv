@@ -1,3 +1,3 @@
 template_file,language,qualifiers,disqualifiers,attachments
-english.txt.j2,english,join  info,cancel today,example.pdf
-german.txt.j2,german,teiln meld info,absagen abmelden spontan,beispiel.pdf
+english.txt.j2,en,join  info,cancel today,example.pdf
+german.txt.j2,de,teiln meld info,absagen abmelden spontan,beispiel.pdf

@@ -15,28 +15,25 @@ class TestDetectLanguage(unittest.TestCase):
     msg = md.Mail()
 
     def test_detect_english(self):
-        self.msg.body = 'Some test with punctuation and contents.'
+        self.msg.body = 'I am some text without contents.'
         self.msg.subject = 'important email'
         self.msg.detect_language()
-        self.assertEqual(self.msg.language, 'english')
+        self.assertEqual(self.msg.language, 'en')
 
     def test_detect_german(self):
-        self.msg.body = 'Ein normaler Text mit einigen Informationen.'
+        self.msg.body = 'Ich bin ein normaler Text mit einigen Informationen.'
         self.msg.subject = 'Hallo'
         self.msg.detect_language()
-        self.assertEqual(self.msg.language, 'german')
+        self.assertEqual(self.msg.language, 'de')
 
-    # def test_detect_italian(self):
-    #     # # TODO: the following text fails
-    #     # self.msg.body = 'Cosa posso fare. Vuoi partecipare. Prego! Ciao!'
-    #     # # This one is less difficult, sometimes english, sometimes italian.
-    #     self.msg.body = "Posso essere d'aiuto? Non può andare a finire bene!"
-    #     self.msg.subject = 'Ciao'
-    #     self.msg.detect_language()
-    #     self.assertEqual(self.msg.language, 'italian')
+    def test_detect_italian(self):
+        self.msg.body = "Posso essere d'aiuto? Non può andare a finire bene!"
+        self.msg.subject = 'Ciao'
+        self.msg.detect_language()
+        self.assertEqual(self.msg.language, 'it')
 
     def test_detect_french(self):
         self.msg.body = 'Je peux vous aider ?'
         self.msg.subject = 'Bonjour'
         self.msg.detect_language()
-        self.assertEqual(self.msg.language, 'french')
+        self.assertEqual(self.msg.language, 'fr')

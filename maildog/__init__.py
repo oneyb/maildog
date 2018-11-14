@@ -2,8 +2,9 @@
 
 # import pdb; pdb.set_trace()
 
-from nltk import wordpunct_tokenize
-from nltk.corpus import stopwords
+import spacy
+# from nltk import wordpunct_tokenize
+# from nltk.corpus import stopwords
 from os.path import basename
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -12,6 +13,7 @@ from email.mime.message import MIMEMessage
 from email.utils import COMMASPACE, formatdate
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from itertools import chain
+import pycld2 as cld2
 
 from maildog.rulesets import _find_files
 
@@ -33,63 +35,100 @@ class Mail(object):
     raw_message = None
     reply_message = None
     send_result = None
+    _doc = None
+    _nlp = None
+
+    def extract_info_from_tags(self):
+        """Tag email contents with part-of-speech classifications. 
+        @return: Dictionary with keywords and their values as deduced from the
+        email's body
+
+        @rtype: dict
+        """
+
+        def _get_first_name(doc):
+            candidates = [w.text for w in doc if w.pos_ == 'PROPN']
+            return candidates
+
+        info = {}
+        info["first_name"] = _get_first_name(self._doc)
+        # info["last_name"] = self._get_last_name(self._doc)
+
+    def analyze_text(self):
+        nlp = spacy.load(self.language)
+        self._doc = nlp(self.subject + self.body)
+        return self._doc
+
+    # _doc = analyze_text(body)
 
     def detect_language(self):
         """
-        Author: Alejandro Nolla - z0mbiehunt3r
-        Purpose: detect language using a stopwords-based approach
-        Created: 15/05/13
-        Calculate probability of given tokens to be written in several
-        languages and return the highest scored.
+        Uses the refactored version of Google's compact language detector.
 
-        It uses a stopwords based approach, counting how many unique stopwords
-        are seen in analyzed text.
-
-        @param tokens: Text whose language want to be detected
-        @type tokens: str
-
-        @return: Most scored language guessed
+        Works for up to 80 languages.
+        @return: highest scored language
         @rtype: str
+
         """
-
-        def _tokenize_email(body, subject):
-            tokens = wordpunct_tokenize(subject + " " + body)
-            tokens = [word.lower() for word in tokens]
-            return tokens
-
-        def _calculate_languages_ratios(words):
-            """Calculate probability of given text to be written in several languages
-            and return a dictionary that looks like {'french': 2, 'spanish': 4,
-            'english': 0}
-
-            @param words: Text whose language want to be detected
-            @type words: str
-
-            @return: Dictionary with languages and unique stopwords seen in
-            analyzed words
-
-            @rtype: dict
-
-            """
-
-            languages_ratios = {}
-            # Compute per language included in nltk number of unique stopwords
-            # appearing in analyzed text
-            for language in stopwords.fileids():
-                stopwords_set = set(stopwords.words(language))
-                words_set = set(words)
-                # common_elements = words_set.intersection(stopwords_set)
-                common_elements = words_set.difference(stopwords_set)
-                # language "score"
-                languages_ratios[language] = len(common_elements)
-
-            return languages_ratios
-
-        self.tokens = _tokenize_email(self.body, self.subject)
-        # print(self.tokens)
-        ratios = _calculate_languages_ratios(self.tokens)
-        self.language = min(ratios, key=ratios.get)
+        _, _, details = cld2.detect(self.subject + self.body)
+        self.language = details[0][1]
+        # print(details)
+        # import pdb; pdb.set_trace()
         return self.language
+
+    # def detect_language(self):
+    #     """
+    #     Author: Alejandro Nolla - z0mbiehunt3r
+    #     Purpose: detect language using a stopwords-based approach
+    #     Created: 15/05/13
+    #     Calculate probability of given tokens to be written in several
+    #     languages and return the highest scored.
+
+    #     It uses a stopwords based approach, counting how many unique
+    #     stopwords are seen in analyzed text.
+
+    #     @return: highest scored language according to number of stopwordsk
+    #     @rtype: str
+    #     """
+
+    #     def _tokenize_email(body, subject):
+    #         tokens = wordpunct_tokenize(subject + " " + body)
+    #         tokens = [word.lower() for word in tokens]
+    #         return tokens
+
+    #     def _calculate_languages_ratios(words):
+    #         """Calculate probability of given text to be written in several languages
+    #         and return a dictionary that looks like {'french': 2, 'spanish': 4,
+    #         'english': 0}
+
+    #         @param words: Text whose language want to be detected
+    #         @type words: str
+
+    #         @return: Dictionary with languages and unique stopwords seen in
+    #         analyzed words
+
+    #         @rtype: dict
+
+    #         """
+
+    #         languages_ratios = {}
+    #         # Compute per language included in nltk number of unique stopwords
+    #         # appearing in analyzed text
+    #         for language in stopwords.fileids():
+    #             stopwords_set = set(stopwords.words(language))
+    #             words_set = set(words)
+    #             # common_elements = words_set.intersection(stopwords_set)
+    #             common_elements = words_set.difference(stopwords_set)
+    #             # language "score"
+    #             languages_ratios[language] = len(common_elements)
+
+    #         return languages_ratios
+
+    #     self.tokens = _tokenize_email(self.body, self.subject)
+    #     # print(self.tokens)
+    #     ratios = _calculate_languages_ratios(self.tokens)
+    #     self.language = min(ratios, key=ratios.get)
+    #     return self.language
 
     def choose_ruleset(self, rulesets):
         """Applies logical questions to determine what the proper answer is.  Returns a
