@@ -61,9 +61,8 @@ class Mail(object):
     def analyze_text(self):
         nlp = spacy.load(self.language)
         self._doc = nlp(self.subject + self.body)
+        self.tokens = [token for token in self._doc]
         return self._doc
-
-    # _doc = analyze_text(body)
 
     def detect_language(self):
         """
@@ -74,6 +73,7 @@ class Mail(object):
         @rtype: str
 
         """
+
         _, _, details = cld2.detect(self.subject + self.body)
         self.language = details[0][1]
         # print(details)

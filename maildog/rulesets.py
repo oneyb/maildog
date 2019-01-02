@@ -33,18 +33,14 @@ def get_rulesets(file_pattern, rulesets_dir):
                     rulesets.append(line)
 
         if f.lower().endswith('xlsx'):
-            raise Exception('Implement reading of xlsx files')
-            # import openpyxl
-            # # TODO  ~/literature/computer-science/python/abs-scripts/readcensusexcel.py
+            # raise Exception('Implement reading of xlsx files')
+            import openpyxl as ox
             # print('Opening workbook...')
-            # wb = openpyxl.load_workbook(f)
-            # sheet = wb.get_sheet_by_name('rulesets')
+            wb = ox.load_workbook(f)
+            sheet = wb['rulesets']
             # print('Reading rows...')
-            # for row in range(2, sheet.get_highest_row() + 1):
-            #     template =      sheet['A' + str(row)].value
-            #     language =       sheet['B' + str(row)].value
-            #     qualifiers =     sheet['C' + str(row)].value
-            #     disqualifiers =  sheet['D' + str(row)].value
+            for row in range(1, len(sheet['A']) + 1):
+                rulesets.append([cell.value for cell in sheet[row]])
 
     Ruleset = namedtuple('Ruleset', rulesets[0])
     rulesets = [Ruleset(*t) for t in rulesets[1:]]

@@ -25,6 +25,13 @@ class TestRuleset(unittest.TestCase):
         self.assertIsInstance(rulesets[0], tuple)
         self.assertIsInstance(rulesets, list)
 
+    def test_get_rulesets_xlsx(self):
+        # f = 'reply_rulesets/rulesets.xlsx'
+        rulesets = md.rulesets.get_rulesets('xlsx', cfg.REPLY_RULESETS_DIR)
+        # print( rulesets )
+        self.assertIsInstance(rulesets[0], tuple)
+        self.assertIsInstance(rulesets, list)
+
     def test_get_no_ruleset_for_english(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)
@@ -33,6 +40,7 @@ class TestRuleset(unittest.TestCase):
         msg.subject = 'important email'
         msg.detect_language()
         rulesets = [r for r in rulesets if r.language is not 'english']
+        msg.analyze_text()
         msg.choose_ruleset(rulesets)
         self.assertIsNone(msg.ruleset)
 
@@ -44,6 +52,7 @@ class TestRuleset(unittest.TestCase):
         msg.subject = 'Hallo'
         msg.detect_language()
         rulesets = [r for r in rulesets if r.language is not 'german']
+        msg.analyze_text()
         msg.choose_ruleset(rulesets)
         self.assertIsNone(msg.ruleset)
 
@@ -54,5 +63,6 @@ class TestRuleset(unittest.TestCase):
         msg.body = 'Some test with contents. Today or tomorrow.'
         msg.subject = 'important email'
         msg.detect_language()
+        msg.analyze_text()
         msg.choose_ruleset(rulesets)
         self.assertIsNone(msg.ruleset)

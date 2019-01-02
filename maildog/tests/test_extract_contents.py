@@ -25,6 +25,16 @@ class TestExtractContents(unittest.TestCase):
         # print(self.msg._doc)
         self.assertEqual(self.msg.info['first_name'], 'Mike')
 
+    def test_detect_english_name(self):
+        self.msg.body = """Ich habe gerade einen Kurs gemacht und bin interessiert zu kommen. Muss ich mich da anmelden?\r\nLiebe Grüsse\r\nHeike Paur\n8001 Zürich"""
+        self.msg.subject = 'Hallo zusammen'
+        self.msg.detect_language()
+        self.msg.analyze_text()
+        self.msg.extract_info_from_tags()
+        print(self.msg.info)
+        # print(self.msg._doc)
+        self.assertEqual(self.msg.info['first_name'], 'Heike')
+
     # def test_detect_german(self):
     #     self.msg.body = 'Ein normaler Text mit einigen Informationen.'
     #     self.msg.subject = 'Hallo'
