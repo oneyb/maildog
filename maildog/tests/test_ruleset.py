@@ -14,6 +14,8 @@ class TestRuleset(unittest.TestCase):
     Make sure the rulesets work as expected
     """
 
+    msg = md.Mail()
+
     def test_get_rulesets_configured(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)
@@ -35,34 +37,34 @@ class TestRuleset(unittest.TestCase):
     def test_get_no_ruleset_for_english(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)
-        msg = md.Mail()
-        msg.body = 'Some test with punctuation and contents.'
-        msg.subject = 'important email'
-        msg.detect_language()
+        self.msg.body = 'Some test with punctuation and contents.'
+        self.msg.subject = 'important email'
+        self.msg.fro = 'user@example.com'
+        self.msg.detect_language()
         rulesets = [r for r in rulesets if r.language is not 'english']
-        msg.analyze_text()
-        msg.choose_ruleset(rulesets)
-        self.assertIsNone(msg.ruleset)
-
+        self.msg.analyze_text()
+        self.msg.choose_ruleset(rulesets)
+        self.assertIsNone(self.msg.ruleset)
+        
     def test_get_no_ruleset_for_german(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)
-        msg = md.Mail()
-        msg.body = 'Ein normaler Text mit einigen Informationen.'
-        msg.subject = 'Hallo'
-        msg.detect_language()
+        self.msg.body = 'Ich bin ein normaler Text mit einigen Informationen.'
+        self.msg.subject = 'Hallo'
+        self.msg.fro = 'user@example.com'
+        self.msg.detect_language()
         rulesets = [r for r in rulesets if r.language is not 'german']
-        msg.analyze_text()
-        msg.choose_ruleset(rulesets)
-        self.assertIsNone(msg.ruleset)
+        self.msg.analyze_text()
+        self.msg.choose_ruleset(rulesets)
+        self.assertIsNone(self.msg.ruleset)
 
     def test_all_rulesets_disqualified(self):
         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
                                             cfg.REPLY_RULESETS_DIR)
-        msg = md.Mail()
-        msg.body = 'Some test with contents. Today or tomorrow.'
-        msg.subject = 'important email'
-        msg.detect_language()
-        msg.analyze_text()
-        msg.choose_ruleset(rulesets)
-        self.assertIsNone(msg.ruleset)
+        self.msg.body = 'Some test with contents. Today or tomorrow.'
+        self.msg.subject = 'important email'
+        self.msg.fro = 'user@example.com'
+        self.msg.detect_language()
+        self.msg.analyze_text()
+        self.msg.choose_ruleset(rulesets)
+        self.assertIsNone(self.msg.ruleset)

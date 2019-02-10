@@ -48,20 +48,29 @@ class Mail(object):
 
         """
 
-        def _get_first_name(doc):
-            candidates = [w.text for w in doc if w.pos_ == 'PROPN']
-            res = candidates.pop() if candidates else ""
+        def _dissect_email(fro):
+            name = fro.split('@')[0].lower()
+            res = name.split('.') if '.' in name else name.split('_')
+            return res
+
+        def _get_names_from_email(doc):
+            # candidates = [w.text.lower() for w in doc if w.pos_ == 'PROPN']
+            # # Less stringent that the above line
+            candidates = [w.text.lower() for w in doc if w.pos_ in ['NOUN', 'PROPN']]
+            print(candidates)
+            username = _dissect_email(self.fro)
+            res = [n for n in candidates if n in username]
             return res
 
         self.info = {}
-        self.info["first_name"] = _get_first_name(self._doc)
+        self.info["first_name"] = _get_names_from_email(self._doc)
         # self.info["last_name"] = self._get_last_name(self._doc)
         return self.info
 
     def analyze_text(self):
         nlp = spacy.load(self.language)
-        self._doc = nlp(self.subject + self.body)
-        self.tokens = [token for token in self._doc]
+        self._doc = nlp(self.subject + '\n' + self.body)
+        self.tokens = [token.text for token in self._doc]
         return self._doc
 
     def detect_language(self):
@@ -80,7 +89,7 @@ class Mail(object):
         # import pdb; pdb.set_trace()
         return self.language
 
-    # def detect_language(self):
+    # def detect_language_simple_nltk(self):
     #     """
     #     Author: Alejandro Nolla - z0mbiehunt3r
     #     Purpose: detect language using a stopwords-based approach
