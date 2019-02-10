@@ -35,6 +35,8 @@ def get_new_emails(cfg):
         for UID in messages.keys():
             mail = Mail()
             # Parse the raw email message.
+            # ep = email.parser.FeedParser()
+            # ep.feed(messages[UID][b'RFC822'].decode())
             ep = email.parser.BytesFeedParser()
             ep.feed(messages[UID][b'RFC822'])
             message = ep.close()
@@ -65,7 +67,6 @@ def get_new_emails(cfg):
             mail.message_id = message.get("Message-ID")
             mail.raw_message = message
             mail.uid = UID
-            # import pdb; pdb.set_trace()
 
             mails.append(mail)
 

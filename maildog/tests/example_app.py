@@ -25,7 +25,8 @@ for msg in mails:
 
     # import pdb; pdb.set_trace()
     msg.detect_language()
-
+    msg.analyze_text()
+    msg.extract_info_from_tags()
     msg.choose_ruleset(rulesets_list)
 
     if msg.ruleset:

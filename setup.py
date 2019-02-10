@@ -39,7 +39,7 @@ except ImportError:
 
 
 class Install(_install):
-    """Allow installation of external files and post-scrips, which are external
+    """Allow installation of external files and post-scripts, which are external
     """
     def run(self):
         _install.run(self)

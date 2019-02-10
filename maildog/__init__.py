@@ -69,7 +69,7 @@ class Mail(object):
 
     def analyze_text(self):
         nlp = spacy.load(self.language)
-        self._doc = nlp(self.subject + '\n' + self.body)
+        self._doc = nlp(self.subject + u'\n' + self.body)
         self.tokens = [token.text for token in self._doc]
         return self._doc
 
@@ -88,60 +88,6 @@ class Mail(object):
         # print(details)
         # import pdb; pdb.set_trace()
         return self.language
-
-    # def detect_language_simple_nltk(self):
-    #     """
-    #     Author: Alejandro Nolla - z0mbiehunt3r
-    #     Purpose: detect language using a stopwords-based approach
-    #     Created: 15/05/13
-    #     Calculate probability of given tokens to be written in several
-    #     languages and return the highest scored.
-
-    #     It uses a stopwords based approach, counting how many unique
-    #     stopwords are seen in analyzed text.
-
-    #     @return: highest scored language according to number of stopwordsk
-    #     @rtype: str
-    #     """
-
-    #     def _tokenize_email(body, subject):
-    #         tokens = wordpunct_tokenize(subject + " " + body)
-    #         tokens = [word.lower() for word in tokens]
-    #         return tokens
-
-    #     def _calculate_languages_ratios(words):
-    #         """Calculate probability of given text to be written in several languages
-    #         and return a dictionary that looks like {'french': 2, 'spanish': 4,
-    #         'english': 0}
-
-    #         @param words: Text whose language want to be detected
-    #         @type words: str
-
-    #         @return: Dictionary with languages and unique stopwords seen in
-    #         analyzed words
-
-    #         @rtype: dict
-
-    #         """
-
-    #         languages_ratios = {}
-    #         # Compute per language included in nltk number of unique stopwords
-    #         # appearing in analyzed text
-    #         for language in stopwords.fileids():
-    #             stopwords_set = set(stopwords.words(language))
-    #             words_set = set(words)
-    #             # common_elements = words_set.intersection(stopwords_set)
-    #             common_elements = words_set.difference(stopwords_set)
-    #             # language "score"
-    #             languages_ratios[language] = len(common_elements)
-
-    #         return languages_ratios
-
-    #     self.tokens = _tokenize_email(self.body, self.subject)
-    #     # print(self.tokens)
-    #     ratios = _calculate_languages_ratios(self.tokens)
-    #     self.language = min(ratios, key=ratios.get)
-    #     return self.language
 
     def choose_ruleset(self, rulesets):
         """Applies logical questions to determine what the proper answer is.  Returns a
@@ -221,15 +167,16 @@ class Mail(object):
 
     def compose_notify_owner(self, rulesets, owner):
 
-        rply = MIMEText(self.body + '\n\n'
-                        + 'Language: %s\n' % self.language
-                        + 'Tokens: %s\n' % ';'.join(self.tokens)
-                        + '\n'.join(str(r._asdict()) for r in rulesets))
+        rply = MIMEText(self.body + u'\n\n'
+                        + u'Language: %s\n' % self.language
+                        + u'Tokens: %s\n' % ';'.join(self.tokens)
+                        + u'\n'.join(str(r._asdict()) for r in rulesets)
+        )
         rply['From'] = self.to
         rply['To'] = owner
         rply['Date'] = formatdate(localtime=True)
         # rply['Date'] = datetime.datetime.today().isoformat()
-        rply['Subject'] = '[MAILDOG Unknown] RE: %s' % self.subject
+        rply['Subject'] = u'[MAILDOG Unknown] RE: %s' % self.subject
 
         return rply
 
