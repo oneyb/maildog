@@ -68,3 +68,18 @@ class TestRuleset(unittest.TestCase):
         self.msg.analyze_text()
         self.msg.choose_ruleset(rulesets)
         self.assertIsNone(self.msg.ruleset)
+
+#     def test_all_rulesets_disqualified(self):
+#         rulesets = md.rulesets.get_rulesets(cfg.RULESET_FILE_PATTERN,
+#                                             cfg.REPLY_RULESETS_DIR)
+#         self.msg.body = """Hallo, 
+# Ich wollte fragen ob es für die Sittings in Zürich ein Rundmail gibt für Ausfälle? Findet es am kommenden Montag statt? 
+# Mit Metta,
+# Franzi"""
+#         'Some test with contents. Today or tomorrow.'
+#         self.msg.subject = 'Groupsitting'
+#         self.msg.fro = 'user@example.com'
+#         self.msg.detect_language()
+#         self.msg.analyze_text()
+#         self.msg.choose_ruleset(rulesets)
+#         self.assertIsNone(self.msg.ruleset)

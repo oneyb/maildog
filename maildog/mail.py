@@ -8,7 +8,7 @@ import logging
 from . import Mail
 
 
-def get_new_emails(cfg):
+def get_new_emails(cfg, message_flags=['re:', 'aw:', 'fw:', 'wg:']):
     """
     1. Log in to the email server.
     2. Fetch ENVELOPE and BODY
@@ -29,7 +29,10 @@ def get_new_emails(cfg):
         UIDs = server.search("UNANSWERED")
         # print(UIDs)
         messages = server.fetch(UIDs, [b'RFC822'])
-        # envelopes = server.fetch(UIDs, [b'ENVELOPE'])
+        server.select_folder('Sent')
+        sent_UIDs = server.search()
+        envelopes = server.fetch(sent_UIDs[:23], [b'ENVELOPE'])
+        message_ids_processed = [ x[b'ENVELOPE'].in_reply_to  for y, x in envelopes.items()]
 
         mails = []
         for UID in messages.keys():
@@ -49,6 +52,11 @@ def get_new_emails(cfg):
                 mail.html = False
 
             # save desirables
+            mail.subject = message['Subject']
+            if [x for x in message_flags if x in mail.subject.lower()]:
+                del mail
+                continue
+
             mail.to = message['To']
             mail.fro = message['From']
             body = message.get_payload(decode=True)
@@ -59,12 +67,14 @@ def get_new_emails(cfg):
             else:
                 mail.body = body.decode()
 
-            mail.subject = message['Subject']
             mail.reply_to = [message.get('Reply-To', mail.fro)]
             if not mail.reply_to:
                 mail.reply_to = [(mail.fro)]
             mail.date = message['Date']
             mail.message_id = message.get("Message-ID")
+            if mail.message_id in message_ids_processed:
+                del mail
+                continue
             mail.raw_message = message
             mail.uid = UID
 

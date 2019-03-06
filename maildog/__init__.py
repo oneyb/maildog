@@ -175,6 +175,7 @@ class Mail(object):
         rply['From'] = self.to
         rply['To'] = owner
         rply['Date'] = formatdate(localtime=True)
+        rply["In-Reply-To"] = self.message_id
         # rply['Date'] = datetime.datetime.today().isoformat()
         rply['Subject'] = u'[MAILDOG Unknown] RE: %s' % self.subject
 
