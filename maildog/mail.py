@@ -32,11 +32,11 @@ def get_new_emails(cfg, message_flags=['re:', 'aw:', 'fw:', 'wg:']):
         server.select_folder('Sent')
         sent_UIDs = server.search()
         envelopes = server.fetch(sent_UIDs, [b'ENVELOPE'])
-        message_ids_processed = [ x[b'ENVELOPE'].in_reply_to  for y, x in envelopes.items()]
+        message_ids_processed = [x[b'ENVELOPE'].in_reply_to
+                                 for y, x in envelopes.items()]
 
         mails = []
         for UID in messages.keys():
-            # import pdb; pdb.set_trace()
 
             mail = Mail()
             # Parse the raw email message.
@@ -102,12 +102,6 @@ def delete_answered_emails(UIDs, cfg):
         if UIDs:
             server.delete_messages(UIDs)
             server.expunge()
-            # server.move(UIDs, imapclient.imapclient.SENT)
-            # server.move(UIDs,
-            #             server.find_special_folder(imapclient.imapclient.SENT))
-
-        # server.logout()  # unnecessary
-
 
 def copy_to_sent_and_delete(mails, cfg):
     """
@@ -134,7 +128,5 @@ def copy_to_sent_and_delete(mails, cfg):
             #             server.find_special_folder(imapclient.imapclient.SENT))
             results[msg.uid] = res_append
         # Delete the emails, if there are any.
-        # import pdb; pdb.set_trace()
-        # server.delete_messages(UIDs)
         server.expunge()
     return results
