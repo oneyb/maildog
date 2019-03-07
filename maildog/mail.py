@@ -31,11 +31,13 @@ def get_new_emails(cfg, message_flags=['re:', 'aw:', 'fw:', 'wg:']):
         messages = server.fetch(UIDs, [b'RFC822'])
         server.select_folder('Sent')
         sent_UIDs = server.search()
-        envelopes = server.fetch(sent_UIDs[:23], [b'ENVELOPE'])
+        envelopes = server.fetch(sent_UIDs, [b'ENVELOPE'])
         message_ids_processed = [ x[b'ENVELOPE'].in_reply_to  for y, x in envelopes.items()]
 
         mails = []
         for UID in messages.keys():
+            # import pdb; pdb.set_trace()
+
             mail = Mail()
             # Parse the raw email message.
             # ep = email.parser.FeedParser()
@@ -72,7 +74,7 @@ def get_new_emails(cfg, message_flags=['re:', 'aw:', 'fw:', 'wg:']):
                 mail.reply_to = [(mail.fro)]
             mail.date = message['Date']
             mail.message_id = message.get("Message-ID")
-            if mail.message_id in message_ids_processed:
+            if mail.message_id.encode() in message_ids_processed:
                 del mail
                 continue
             mail.raw_message = message
@@ -125,7 +127,7 @@ def copy_to_sent_and_delete(mails, cfg):
         for msg in mails:
             res_append = server.append('Sent', msg.reply_message.as_string(),
                                        [r'\Seen'])
-            if b'APPEND completed' in res_append:
+            if b'APPEND completed' in res_append and msg.reply:
                 res_mark = server.add_flags(msg.uid, [r'\Seen', r'\Deleted'])
             # server.move(UIDs, imapclient.imapclient.SENT)
             # server.move(UIDs,
