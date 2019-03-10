@@ -128,5 +128,5 @@ def copy_to_sent_and_delete(mails, cfg):
             #             server.find_special_folder(imapclient.imapclient.SENT))
             results[msg.uid] = res_append
         # Delete the emails, if there are any.
-        server.expunge()
+        # server.expunge()
     return results

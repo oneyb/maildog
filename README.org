@@ -9,14 +9,31 @@ internet, so they write an email.
 
 If many people do this the replying human may not have the time to be as
 informative or as friendly as one wishes. Alas, the newcomer has a sour taste
-from reading a short, uninformative, hastily written, or even somewhat brusk
+from reading a short, uninformative, hastily written, or a possibly brusk
 reply.
 
 Everyone likes dogs. Dogs are friendly and attuned to our emotions, habits,
 and lives. We train them to be helpful. This software is supposed to be like a
 dog that retrieves the newspaper, barks only at intruders, amiably nuzzles the
-newcomer, and keeps quiet when it doesn't know what to do. We train it to be
-helpful. It has the propensity to learn and grow.
+newcomer, and keeps quiet when it doesn't know what to do, other than telling
+the owner that there is trouble. We train it to be helpful. It has the
+propensity to learn and grow.
+
+Specifically it does the following.
+ - reads the email account that you have configured
+   - [[file:maildog/tests/config/config.py][maildog/tests/config/config.py]]
+ - deduces the language
+ - analyzes the text according to its language
+ - extracts information from the analysis
+   - [[file:maildog/__init__.py][maildog/__init__.py]]
+ - chooses the appropiate ruleset that you have configured
+   - [[file:maildog/rulesets.py][maildog/rulesets.py]] 
+ - *if no appropriate ruleset can be found*, the email is not answered and the
+   owner of the email account is notified.
+   - It only sends one reply for each unknown email. You will not be bombarded
+     with notification emails.
+ - *if an appropriate ruleset can be found*, the email is answered and deleted.
+ - 
 
 * Get maildog working for you
 The idea of maildog is that you train it for your needs. The following steps
@@ -44,31 +61,32 @@ detail what this entails.
    #+END_SRC
 
 3. Inspect and modify the following files according to your taste.
-   - [[maildog/tests/example_app.py]]
+   - [[file:maildog/tests/example_app.py][maildog/tests/example_app.py]]
      - This shows a simple example of what you could set up.
-   - [[maildog/tests/reply_data/example.pdf]]
+   - [[file:maildog/tests/reply_data/example.pdf][maildog/tests/reply_data/example.pdf]]
      - You can add any kind of attachment.
-   - [[maildog/tests/reply_data/beispiel.pdf]]
+   - [[file:maildog/tests/reply_data/beispiel.pdf][maildog/tests/reply_data/beispiel.pdf]]
      - Ditto.
-   - [[maildog/tests/reply_templates/english.txt.j2]]
+   - [[file:maildog/tests/reply_templates/english.txt.j2][maildog/tests/reply_templates/english.txt.j2]]
      - What about a friendly template?
-   - [[maildog/tests/reply_templates/german.txt.j2]]
+   - [[file:maildog/tests/reply_templates/german.txt.j2][maildog/tests/reply_templates/german.txt.j2]]
      - Sprechen Sie Deutsch?
-   - [[maildog/tests/reply_rulesets/rulesets.csv]]
-     - Configure what is sent (which attachment, template, etc.) if at all.
-   - [[maildog/tests/config/maildog.timer]]
+   - [[file:maildog/tests/reply_rulesets/rulesets.csv][maildog/tests/reply_rulesets/rulesets.csv]] or
+   - [[file:maildog/tests/reply_rulesets/rulesets.csv][maildog/tests/reply_rulesets/rulesets.xlsx]]
+     - *Configure what is sent (which attachment, template, etc.) and when. Don't change the filename or sheet names from their current configuration.*
+   - [[file:maildog/tests/config/maildog.timer][maildog/tests/config/maildog.timer]]
      - Why not cron?
-   - [[maildog/tests/config/maildog.service]]
+   - [[file:maildog/tests/config/maildog.service][maildog/tests/config/maildog.service]]
      - Sheesh! Two files for a periodically run application?!
-   - [[maildog/tests/config/config.py]]
+   - [[file:maildog/tests/config/config.py][maildog/tests/config/config.py]]
      - What you are storing passwords as plain text? You'd better have that file unreadable and that server well secured.
-   - [[maildog/tests/test_render_template.py]]
+   - [[file:maildog/tests/test_render_template.py][maildog/tests/test_render_template.py]]
      - Ah, tests. Good.
-   - [[maildog/tests/test_detect_language.py]]
+   - [[file:maildog/tests/test_detect_language.py][maildog/tests/test_detect_language.py]]
      - Non parle italiano!? Che cazzo!
-   - [[maildog/tests/test_email_config.py]]
+   - [[file:maildog/tests/test_email_config.py][maildog/tests/test_email_config.py]]
      - That's a cute test...
-   - [[maildog/tests/test_ruleset.py]]
+   - [[file:maildog/tests/test_ruleset.py][maildog/tests/test_ruleset.py]]
      - Those named tuples are pretty snazzy, eh?
 
 4. Install a systemd service for your user.
@@ -84,16 +102,17 @@ detail what this entails.
 
 5. Check whether the dog does what you want.
 
-6. Enjoy the helpfulness of the new pet
+6. Enjoy the helpfulness of the new pet.
 
 * Anatomy of maildog
 
 Given access to an email server, maildog fetches email and chews them into a useful form (Mail). 
 
  - *Mail*: 
-   - has a tokenized (nltk) form of the email's subject and body,
-   - knows the language it was written in, and
-   - based on how you trained the dog (how rulesets are defined), has chosen a template.
+   - has a tokenized (spaCy) form of the email's subject and body,
+   - knows the language it was written in (ccld2), and
+   - based on how you trained the dog (how the rulesets are defined), has
+     chosen a template.
 
  See the [[file:maildog/__init__.py][definition]] for more information
 

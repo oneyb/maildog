@@ -1,9 +1,13 @@
 [Unit]
-Description=A timer for Maildog: the extensible, email reply hound
+Description=A timer for Maildog
 
 [Timer]
-# OnBootSec=26s
-Unit=maildog.service
+# # Every day at 12:10, 12:20, 12:30 and so on
+# OnCalendar=12,13,14:10,20,30
+# Every day at 08:06, 12:06, 16:06, 20:06 local time 
+OnCalendar=8,12,16,20:06
+# Within a 3-minute window
+RandomizedDelaySec=180
 
 [Install]
 WantedBy=default.target

@@ -23,7 +23,6 @@ rulesets_list = rulesets.get_rulesets('csv', cfg.REPLY_RULESETS_DIR)
 
 for msg in mails:
 
-    # import pdb; pdb.set_trace()
     msg.detect_language()
     msg.analyze_text()
     msg.extract_info_from_tags()
@@ -41,9 +40,6 @@ for msg in mails:
                                                      cfg.MAILDOG_OWNER_EMAIL)
 
 
-# import time; time.sleep(10)
-# import pdb; pdb.set_trace()
-
 # Log in to email account and send mails
 with smtplib.SMTP(cfg.SMTP_SERVER, cfg.SMTP_PORT) as send_server:
     send_server.ehlo()
@@ -55,6 +51,7 @@ with smtplib.SMTP(cfg.SMTP_SERVER, cfg.SMTP_PORT) as send_server:
         print(msg.send_result)
 
 
-# copy and delete if successfully replied to and sent
-mail.copy_to_sent_and_delete([msg for msg in mails if msg.reply],
-                             cfg)
+# copy and delete if successfully answered, otherwise notify the owner
+mail.copy_to_sent_and_mark_deleted(mails, cfg)
+# # If you prefer to keep a clean inbox
+# mail.delete_answered_emails(mails, cfg)
