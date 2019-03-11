@@ -35,7 +35,7 @@ def get_rulesets(file_pattern, rulesets_dir):
         if f.lower().endswith('xlsx'):
             # raise Exception('Implement reading of xlsx files')
             import openpyxl as ox
-            # print('Opening workbook...')
+            print('Opening workbook...')
             wb = ox.load_workbook(f)
             sheet = wb['rulesets']
             # print('Reading rows...')
