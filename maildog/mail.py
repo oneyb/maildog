@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-# import pdb
 import imapclient
-# import pyzmail
 import email.parser
 import logging
 from . import Mail
@@ -103,7 +101,7 @@ def delete_answered_emails(UIDs, cfg):
             server.delete_messages(UIDs)
             server.expunge()
 
-def copy_to_sent_and_delete(mails, cfg):
+def copy_to_sent_and_mark_deleted(mails, cfg):
     """
     1. Log in to the email server.
     2. APPEND sent message to Sent folder
