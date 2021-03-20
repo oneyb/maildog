@@ -1,5 +1,5 @@
 IMAPClient==2.1.0
-Jinja2==2.11
+Jinja2==2.11.3
 openpyxl==2.5.4
 spacy>=2.0.0,<3.0.0
 pycld2==0.31
